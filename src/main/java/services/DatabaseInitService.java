@@ -17,7 +17,7 @@ public class DatabaseInitService {
         String[] sqlStatements = readFile.readFile(dBInitFile);
 
         for (String sql : sqlStatements) {
-            Database.executeUpdate(sql);
+            DatabaseQueryService.executeUpdate(sql);
         }
     }
 

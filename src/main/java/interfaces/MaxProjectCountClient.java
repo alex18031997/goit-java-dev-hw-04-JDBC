@@ -1,6 +1,6 @@
 package interfaces;
 
-public class MaxProjectsClient {
+public class MaxProjectCountClient{
     private String NAME;
     private int PROJECT_COUNT;
 

@@ -4,12 +4,11 @@ import config.Database;
 import interfaces.*;
 import props.PropertyReader;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +19,16 @@ public class DatabaseQueryService {
     public static void main(String[] args) throws IOException, SQLException {
         Connection conn = Database.getInstance();
 
+    }
+
+    public static int executeUpdate(String query) throws SQLException {
+        Connection connection = Database.getConnection();
+        try (Statement statement = connection.createStatement()) {
+            return statement.executeUpdate(query);
+        } catch (SQLException e) {
+            System.out.println(String.format("can not execute reason: %s", e));
+            throw new RuntimeException("Can not run query");
+        }
     }
 
     public List<LongestProject> FindLongestProject() throws IOException, SQLException {
@@ -41,15 +50,15 @@ public class DatabaseQueryService {
         return longestProjects;
     }
 
-    public List<MaxProjectsClient> FindMaxProjectsClient() throws IOException, SQLException {
+    public List<MaxProjectCountClient> findMaxProjectsClient() throws IOException, SQLException {
         String maxProjectsClientFile = PropertyReader.getDBFindMaxProjectsClientFile();
         String readFile = readSQLFile.readSelectFile(maxProjectsClientFile);
 
         ResultSet resultSet = Database.executeQuery(readFile);
-        List<MaxProjectsClient> maxProjectsClient = new ArrayList<>();
+        List<MaxProjectCountClient> maxProjectsClient = new ArrayList<>();
 
         while (resultSet.next()) {
-            MaxProjectsClient project = new MaxProjectsClient();
+            MaxProjectCountClient project = new MaxProjectCountClient();
             String name = resultSet.getString("NAME");
             Integer MONTH_COUNT = resultSet.getInt("PROJECT_COUNT");
             project.setName(name);
@@ -60,7 +69,7 @@ public class DatabaseQueryService {
         return maxProjectsClient;
     }
 
-    public List<MaxSalaryWorker> FindFindMaxSalaryWorker() throws IOException, SQLException {
+    public List<MaxSalaryWorker> findMaxSalaryWorker() throws IOException, SQLException {
         String maxSalaryWorkerFile = PropertyReader.getDBFindMaxSalaryWorkerFile();
         String readFile = readSQLFile.readSelectFile(maxSalaryWorkerFile);
 
@@ -79,7 +88,7 @@ public class DatabaseQueryService {
         return maxSalaryWorker;
     }
 
-    public List<MaxYoungestEldestWorker> FindFindYoungestEldestWorker() throws IOException, SQLException {
+    public List<MaxYoungestEldestWorker> findYoungestEldestWorker() throws IOException, SQLException {
         String youngestEldestWorkerFile = PropertyReader.getDBFindYoungestEldestWorkerFile();
         String readFile = readSQLFile.readSelectFile(youngestEldestWorkerFile);
 
@@ -100,7 +109,7 @@ public class DatabaseQueryService {
         return youngestEldestWorkers;
     }
 
-    public List<ProjectPrices> ProjectPrices() throws IOException, SQLException {
+    public List<ProjectPrices> findProjectPrices() throws IOException, SQLException {
         String projectsPricesFile = PropertyReader.getDBFindProjectsPricesFile();
         String readFile = readSQLFile.readSelectFile(projectsPricesFile);
 
