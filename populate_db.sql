@@ -1,4 +1,3 @@
-
 INSERT INTO worker (NAME, BIRTHDAY, LEVEL, SALARY)
 VALUES
     ('John Петров', '1990-05-15', 'Trainee', 800),
@@ -33,43 +32,3 @@ VALUES
     (2, '2023-08-10', '2023-11-30'),
     (4, '2023-09-05', '2023-12-05'),
     (5, '2023-10-20', '2024-01-20');
-
-
-INSERT INTO project_worker (PROJECT_ID, WORKER_ID)
-SELECT 
-    project.ID, worker.ID
-FROM 
-    project
-JOIN
-    worker
-ON
-    worker.LEVEL = 'Senior'
-ORDER BY 
-    RAND()
-LIMIT 5;
-
-INSERT INTO project_worker (PROJECT_ID, WORKER_ID)
-SELECT 
-    project.ID, worker.ID
-FROM 
-    project
-JOIN
-    worker
-ON
-    worker.LEVEL = 'Middle'
-ORDER BY 
-    RAND()
-LIMIT 5;
-
-INSERT INTO project_worker (PROJECT_ID, WORKER_ID)
-SELECT 
-    project.ID, worker.ID
-FROM 
-    project
-JOIN
-    worker
-ON
-    worker.LEVEL = 'Junior'
-ORDER BY 
-    RAND()
-LIMIT 5;

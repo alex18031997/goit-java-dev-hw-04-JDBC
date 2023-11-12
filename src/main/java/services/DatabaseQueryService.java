@@ -5,7 +5,6 @@ import interfaces.*;
 import props.PropertyReader;
 
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -14,121 +13,161 @@ import java.util.List;
 
 public class DatabaseQueryService {
 
-    private ReadSQLFile readSQLFile = new ReadSQLFile();
+    private static ReadSQLFile readSQLFile = new ReadSQLFile();
 
     public static void main(String[] args) throws IOException, SQLException {
-        Connection conn = Database.getInstance();
+        List<MaxProjectCountClient> maxProjectCountClients = findMaxProjectsClient();
+        List<MaxSalaryWorker> maxSalaryWorker = findMaxSalaryWorker();
+        List<MaxYoungestEldestWorker> maxYoungestEldestWorkers = findYoungestEldestWorker();
+        List<ProjectPrices> projectPrices = findProjectPrices();
+        List<LongestProject> longestProject = findLongestProject();
 
+        System.out.println(maxProjectCountClients);
+        System.out.println(maxSalaryWorker);
+        System.out.println(maxYoungestEldestWorkers);
+        System.out.println(projectPrices);
+        System.out.println(longestProject);
     }
 
-    public static int executeUpdate(String query) throws SQLException {
-        Connection connection = Database.getConnection();
-        try (Statement statement = connection.createStatement()) {
-            return statement.executeUpdate(query);
+    public static List<LongestProject> findLongestProject() throws IOException {
+
+        List<LongestProject> longestProjects = new ArrayList<>();
+
+        try {
+            String longestProjectFile = PropertyReader.getDataFromProp("db.find.longest.project.path");
+            String readFile = ReadSQLFile.readSelectFile(longestProjectFile);
+
+            Statement statement = Database.getConnection().createStatement();
+            ResultSet resultSet = statement.executeQuery(readFile);
+
+
+            while (resultSet.next()) {
+                LongestProject project = new LongestProject();
+                String name = resultSet.getString("NAME");
+                int MONTH_COUNT = resultSet.getInt("MONTH_COUNT");
+                project.setName(name);
+                project.setMonthCount(MONTH_COUNT);
+                longestProjects.add(project);
+            }
+            resultSet.close();
         } catch (SQLException e) {
             System.out.println(String.format("can not execute reason: %s", e));
             throw new RuntimeException("Can not run query");
-        }
-    }
-
-    public List<LongestProject> FindLongestProject() throws IOException, SQLException {
-        String longestProjectFile = PropertyReader.getDBFindLongestProjectFile();
-        String readFile = readSQLFile.readSelectFile(longestProjectFile);
-
-        ResultSet resultSet = Database.executeQuery(readFile);
-        List<LongestProject> longestProjects = new ArrayList<>();
-
-        while (resultSet.next()) {
-            LongestProject project = new LongestProject();
-            String name = resultSet.getString("NAME");
-            Integer MONTH_COUNT = resultSet.getInt("MONTH_COUNT");
-            project.setName(name);
-            project.setMonthCount(MONTH_COUNT);
-            longestProjects.add(project);
         }
 
         return longestProjects;
     }
 
-    public List<MaxProjectCountClient> findMaxProjectsClient() throws IOException, SQLException {
-        String maxProjectsClientFile = PropertyReader.getDBFindMaxProjectsClientFile();
-        String readFile = readSQLFile.readSelectFile(maxProjectsClientFile);
+    public static List<MaxProjectCountClient> findMaxProjectsClient() throws IOException {
 
-        ResultSet resultSet = Database.executeQuery(readFile);
         List<MaxProjectCountClient> maxProjectsClient = new ArrayList<>();
 
-        while (resultSet.next()) {
-            MaxProjectCountClient project = new MaxProjectCountClient();
-            String name = resultSet.getString("NAME");
-            Integer MONTH_COUNT = resultSet.getInt("PROJECT_COUNT");
-            project.setName(name);
-            project.setProjectCount(MONTH_COUNT);
-            maxProjectsClient.add(project);
+        try {
+            String maxProjectsClientFile = PropertyReader.getDataFromProp("db.find.max.projects.client.path");
+            String readFile = ReadSQLFile.readSelectFile(maxProjectsClientFile);
+            Statement statement = Database.getConnection().createStatement();
+            ResultSet resultSet = statement.executeQuery(readFile);
+
+            while (resultSet.next()) {
+                MaxProjectCountClient project = new MaxProjectCountClient();
+                String name = resultSet.getString("NAME");
+                int PROJECT_COUNT = resultSet.getInt("PROJECT_COUNT");
+                project.setName(name);
+                project.setProjectCount(PROJECT_COUNT);
+                maxProjectsClient.add(project);
+            }
+            resultSet.close();
+        } catch (SQLException e) {
+            System.out.println(String.format("can not execute reason: %s", e));
+            throw new RuntimeException("Can not run query");
         }
 
         return maxProjectsClient;
     }
 
-    public List<MaxSalaryWorker> findMaxSalaryWorker() throws IOException, SQLException {
-        String maxSalaryWorkerFile = PropertyReader.getDBFindMaxSalaryWorkerFile();
-        String readFile = readSQLFile.readSelectFile(maxSalaryWorkerFile);
+    public static List<MaxSalaryWorker> findMaxSalaryWorker() throws IOException, SQLException {
 
-        ResultSet resultSet = Database.executeQuery(readFile);
         List<MaxSalaryWorker> maxSalaryWorker = new ArrayList<>();
 
-        while (resultSet.next()) {
-            MaxSalaryWorker worker = new MaxSalaryWorker();
-            String name = resultSet.getString("NAME");
-            Integer MONTH_COUNT = resultSet.getInt("SALARY");
-            worker.setName(name);
-            worker.setSalary(MONTH_COUNT);
-            maxSalaryWorker.add(worker);
+        try {
+            String maxSalaryWorkerFile = PropertyReader.getDataFromProp("db.find.max.salary.worker.path");
+            String readFile = ReadSQLFile.readSelectFile(maxSalaryWorkerFile);
+
+            Statement statement = Database.getConnection().createStatement();
+            ResultSet resultSet = statement.executeQuery(readFile);
+
+            while (resultSet.next()) {
+                MaxSalaryWorker worker = new MaxSalaryWorker();
+                String name = resultSet.getString("NAME");
+                int MONTH_COUNT = resultSet.getInt("SALARY");
+                worker.setName(name);
+                worker.setSalary(MONTH_COUNT);
+                maxSalaryWorker.add(worker);
+            }
+            resultSet.close();
+        } catch (SQLException e) {
+            System.out.println(String.format("can not execute reason: %s", e));
+            throw new RuntimeException("Can not run query");
         }
 
         return maxSalaryWorker;
     }
 
-    public List<MaxYoungestEldestWorker> findYoungestEldestWorker() throws IOException, SQLException {
-        String youngestEldestWorkerFile = PropertyReader.getDBFindYoungestEldestWorkerFile();
-        String readFile = readSQLFile.readSelectFile(youngestEldestWorkerFile);
+    public static List<MaxYoungestEldestWorker> findYoungestEldestWorker() throws IOException, SQLException {
 
-        ResultSet resultSet = Database.executeQuery(readFile);
         List<MaxYoungestEldestWorker> youngestEldestWorkers = new ArrayList<>();
 
-        while (resultSet.next()) {
-            MaxYoungestEldestWorker worker = new MaxYoungestEldestWorker();
-            String type = resultSet.getString("TYPE");
-            String name = resultSet.getString("NAME");
-            String birthday = resultSet.getString("BIRTHDAY");
-            worker.setType(type);
-            worker.setName(name);
-            worker.setBirthday(birthday);
-            youngestEldestWorkers.add(worker);
+        try {
+            String youngestEldestWorkerFile = PropertyReader.getDataFromProp("db.find.youngest.eldest.workers.path");
+            String readFile = ReadSQLFile.readSelectFile(youngestEldestWorkerFile);
+
+            Statement statement = Database.getConnection().createStatement();
+            ResultSet resultSet = statement.executeQuery(readFile);
+
+            while (resultSet.next()) {
+                MaxYoungestEldestWorker worker = new MaxYoungestEldestWorker();
+                String type = resultSet.getString("TYPE");
+                String name = resultSet.getString("NAME");
+                String birthday = resultSet.getString("BIRTHDAY");
+                worker.setType(type);
+                worker.setName(name);
+                worker.setBirthday(birthday);
+                youngestEldestWorkers.add(worker);
+            }
+            resultSet.close();
+        } catch (SQLException e) {
+            System.out.println(String.format("can not execute reason: %s", e));
+            throw new RuntimeException("Can not run query");
         }
 
         return youngestEldestWorkers;
     }
 
-    public List<ProjectPrices> findProjectPrices() throws IOException, SQLException {
-        String projectsPricesFile = PropertyReader.getDBFindProjectsPricesFile();
-        String readFile = readSQLFile.readSelectFile(projectsPricesFile);
+    public static List<ProjectPrices> findProjectPrices() throws IOException, SQLException {
 
-        ResultSet resultSet = Database.executeQuery(readFile);
         List<ProjectPrices> projectsPrices = new ArrayList<>();
 
-        while (resultSet.next()) {
-            ProjectPrices projectPrice = new ProjectPrices();
-            String name = resultSet.getString("NAME");
-            Integer PRICE = resultSet.getInt("PRICE");
-            projectPrice.setName(name);
-            projectPrice.setPrice(PRICE);
-            projectsPrices.add(projectPrice);
+        try {
+            String projectsPricesFile = PropertyReader.getDataFromProp("db.print.projects.prices.path");
+            String readFile = readSQLFile.readSelectFile(projectsPricesFile);
+
+            Statement statement = Database.getConnection().createStatement();
+            ResultSet resultSet = statement.executeQuery(readFile);
+
+            while (resultSet.next()) {
+                ProjectPrices projectPrice = new ProjectPrices();
+                String name = resultSet.getString("NAME");
+                int PRICE = resultSet.getInt("PRICE");
+                projectPrice.setName(name);
+                projectPrice.setPrice(PRICE);
+                projectsPrices.add(projectPrice);
+            }
+            resultSet.close();
+        } catch (SQLException e) {
+            System.out.println(String.format("can not execute reason: %s", e));
+            throw new RuntimeException("Can not run query");
         }
 
         return projectsPrices;
     }
-
-
-
-
 }

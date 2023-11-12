@@ -19,4 +19,9 @@ public class LongestProject {
     public void setMonthCount(int MONTH_COUNT) {
         this.MONTH_COUNT = MONTH_COUNT;
     }
+
+    @Override
+    public String toString() {
+        return "{" + "NAME: " + getName() + ", MONTH_COUNT: " + getMonthCount() + "}";
+    }
 }

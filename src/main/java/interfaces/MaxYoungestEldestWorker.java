@@ -31,4 +31,9 @@ public class MaxYoungestEldestWorker {
     public void setBirthday(String BIRTHDAY) {
         this.BIRTHDAY = BIRTHDAY;
     }
+
+    @Override
+    public String toString() {
+        return "{" + "TYPE: " + getType() + ", NAME: " + getName() + ", BIRTHDAY:" + getBirthday() + "}";
+    }
 }

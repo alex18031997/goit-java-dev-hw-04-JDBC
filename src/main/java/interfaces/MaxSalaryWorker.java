@@ -19,4 +19,9 @@ public class MaxSalaryWorker {
     public void setSalary(int SALARY) {
         this.SALARY = SALARY;
     }
+
+    @Override
+    public String toString() {
+        return "{" + "SALARY: " + getSalary() + ", name: " + getName() + "}";
+    }
 }

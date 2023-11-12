@@ -19,4 +19,9 @@ public class ProjectPrices {
     public void setPrice(int PRICE) {
         this.PRICE = PRICE;
     }
+
+    @Override
+    public String toString() {
+        return "{" + "PRICE: " + getPrice() + ", name: " + getName() + "}";
+    }
 }
